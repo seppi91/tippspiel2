@@ -12,14 +12,20 @@ import javax.persistence.ManyToOne
 @Entity
 data class Fixture(
 
-        @Id val id: Long?,
-        val date: Timestamp,
-        @Enumerated(EnumType.STRING) val status: FixtureStatus,
-        val matchday: Int,
-        val odds: Double?,
-        val goalsHomeTeam: Int?,
-        val goalsAwayTeam: Int?,
-        @ManyToOne(cascade = [CascadeType.MERGE]) val homeTeam: Team,
-        @ManyToOne(cascade = [CascadeType.MERGE]) val awayTeam: Team,
-        @ManyToOne(cascade = [CascadeType.MERGE]) val competition: Competition
+        @Id var id: Long?,
+        var date: Timestamp,
+        @Enumerated(EnumType.STRING) var status: FixtureStatus,
+        var matchday: Int,
+        var odds: Double?,
+        var goalsHomeTeam: Int?,
+        var goalsAwayTeam: Int?,
+        @ManyToOne(cascade = [CascadeType.MERGE]) var homeTeam: Team,
+        @ManyToOne(cascade = [CascadeType.MERGE]) var awayTeam: Team,
+        @ManyToOne(cascade = [CascadeType.MERGE]) var competition: Competition,
+        /**
+         * If `true`, will not be updated by external API.
+         *
+         * @see [com.github.zemke.tippspiel2.integration.IntegrationConfig]
+         */
+        var manual: Boolean = false
 )

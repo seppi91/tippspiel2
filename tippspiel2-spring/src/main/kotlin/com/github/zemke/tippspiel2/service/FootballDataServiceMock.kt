@@ -4,6 +4,7 @@ import com.github.zemke.tippspiel2.core.profile.Dev
 import com.github.zemke.tippspiel2.view.model.FootballDataCompetitionDto
 import com.github.zemke.tippspiel2.view.model.FootballDataFixtureWrappedListDto
 import com.github.zemke.tippspiel2.view.model.FootballDataTeamWrappedListDto
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import java.util.*
 
@@ -36,6 +37,10 @@ class FootballDataServiceMock : FootballDataService {
     }
 
     override fun requestTeams(competitionId: Long): FootballDataTeamWrappedListDto {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun requestFixturesAsEntity(competitionId: Long): ResponseEntity<FootballDataFixtureWrappedListDto> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }

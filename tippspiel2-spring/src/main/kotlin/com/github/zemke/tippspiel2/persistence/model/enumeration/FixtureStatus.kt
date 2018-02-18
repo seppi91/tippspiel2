@@ -9,5 +9,10 @@ enum class FixtureStatus {
     IN_PLAY,
     FINISHED,
     POSTPONED,
-    CANCELED
+    CANCELED;
+
+    companion object {
+
+        fun finalStatuses() = listOf(CANCELED, FINISHED)
+    }
 }

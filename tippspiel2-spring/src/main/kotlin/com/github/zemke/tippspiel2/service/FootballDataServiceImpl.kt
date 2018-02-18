@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.devtools.remote.client.HttpHeaderInterceptor
 import org.springframework.boot.web.client.RestTemplateBuilder
 import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
@@ -53,6 +54,11 @@ open class FootballDataServiceImpl : FootballDataService {
 
     override fun requestTeams(competitionId: Long): FootballDataTeamWrappedListDto =
             fireQuery("/competitions/$competitionId/teams")
+
+    override fun requestFixturesAsEntity(competitionId: Long): ResponseEntity<FootballDataFixtureWrappedListDto> =
+            restTemplate.getForEntity<FootballDataFixtureWrappedListDto>(
+                    "${footballDataProperties.endpoint}${"/competitions/$competitionId/fixtures"}",
+                    FootballDataFixtureWrappedListDto::class.java)
 
     private inline fun <reified T : Any> fireQuery(absoluteApiPath: String): T =
             restTemplate.getForObject("${footballDataProperties.endpoint}$absoluteApiPath", T::class.java)
