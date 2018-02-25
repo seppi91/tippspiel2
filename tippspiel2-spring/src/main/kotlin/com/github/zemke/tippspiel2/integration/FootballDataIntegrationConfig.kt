@@ -27,7 +27,7 @@ import java.util.logging.Logger
 
 @Configuration
 @EnableIntegration
-open class IntegrationConfig {
+open class FootballDataIntegrationConfig {
 
     @Autowired
     private lateinit var footballDataService: FootballDataService
@@ -41,7 +41,7 @@ open class IntegrationConfig {
     companion object {
 
         private const val COMPETITION_HEADER_NAME = "competition"
-        private val LOGGER = Logger.getLogger(IntegrationConfig::class.java.name)
+        private val LOGGER = Logger.getLogger(FootballDataIntegrationConfig::class.java.name)
     }
 
     @Bean

@@ -25,7 +25,7 @@ data class Fixture(
         /**
          * If `true`, will not be updated by external API.
          *
-         * @see [com.github.zemke.tippspiel2.integration.IntegrationConfig]
+         * @see [com.github.zemke.tippspiel2.integration.FootballDataIntegrationConfig]
          */
         var manual: Boolean = false
 )
