@@ -25,6 +25,9 @@ import org.springframework.messaging.MessageHeaders
 import org.springframework.messaging.support.MessageBuilder
 import java.util.logging.Logger
 
+// TODO Use Spring Integration's Java DSL for better readability of the Integration flow.
+// TODO Find a way to test and introduce sophisticated logging.
+
 @Configuration
 @EnableIntegration
 open class FootballDataIntegrationConfig {
@@ -41,7 +44,7 @@ open class FootballDataIntegrationConfig {
     companion object {
 
         private const val COMPETITION_HEADER_NAME = "competition"
-        private val LOGGER = Logger.getLogger(FootballDataIntegrationConfig::class.java.name)
+        private val LOGGER = Logger.getLogger(FootballDataIntegrationConfig::class.java.name) // TODO Get to know Spring Boot logging best practices.
     }
 
     @Bean
