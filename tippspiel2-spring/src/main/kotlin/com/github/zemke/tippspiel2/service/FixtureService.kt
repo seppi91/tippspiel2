@@ -17,4 +17,6 @@ class FixtureService(
     fun findUnfinishedFixtures() = fixtureRepository.findByFixtureStatusNotIn(FixtureStatus.finalStatuses())
 
     fun findFixturesByCompetitionAndManualFalse(competition: Competition) = fixtureRepository.findByCompetitionAndManualFalse(competition)
+
+    fun getById(fixtureId: Long): Fixture? = fixtureRepository.findOne(fixtureId)
 }
