@@ -6,6 +6,7 @@ import com.github.zemke.tippspiel2.persistence.model.Fixture
 import com.github.zemke.tippspiel2.persistence.model.Team
 import com.github.zemke.tippspiel2.service.FixtureService
 import com.github.zemke.tippspiel2.service.FootballDataService
+import com.github.zemke.tippspiel2.service.StandingService
 import com.github.zemke.tippspiel2.view.model.FootballDataFixtureDto
 import com.github.zemke.tippspiel2.view.model.FootballDataFixtureWrappedListDto
 import org.springframework.beans.factory.annotation.Autowired
@@ -40,6 +41,9 @@ open class FootballDataIntegrationConfig {
 
     @Autowired
     private lateinit var fixtureService: FixtureService
+
+    @Autowired
+    private lateinit var standingService: StandingService
 
     companion object {
 
@@ -89,7 +93,9 @@ open class FootballDataIntegrationConfig {
                 .map { FootballDataFixtureDto.fromDto(it, teams, competition) }
                 .filter { fixtures.contains(it) }
 
-        fixtureService.saveMany(fixturesToSave)
+        if (fixturesToSave.isNotEmpty()) {
+            standingService.updateByFixtures(fixtureService.saveMany(fixturesToSave))
+        }
 
         val requestsTillResetHeaderValue = messageHeaderAccessor.getHeader(
                 footballDataProperties.requestsTillResetHeader, Int::class.java)
