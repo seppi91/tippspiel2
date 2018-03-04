@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository
 @Repository
 interface FixtureRepository : JpaRepository<Fixture, Long> {
 
-    fun findByFixtureStatusNotIn(fixtureStatuses: List<FixtureStatus>): List<Fixture>
+    fun findByStatusNotIn(statuses: List<FixtureStatus>): List<Fixture>
 
     fun findByCompetitionAndManualFalse(competition: Competition): List<Fixture>
 }

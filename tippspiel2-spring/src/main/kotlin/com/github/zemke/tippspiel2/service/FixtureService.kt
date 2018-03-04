@@ -14,7 +14,7 @@ class FixtureService(
 
     fun saveMany(fixtures: List<Fixture>): List<Fixture> = fixtureRepository.save(fixtures)
 
-    fun findUnfinishedFixtures() = fixtureRepository.findByFixtureStatusNotIn(FixtureStatus.finalStatuses())
+    fun findUnfinishedFixtures() = fixtureRepository.findByStatusNotIn(FixtureStatus.finalStatuses())
 
     fun findFixturesByCompetitionAndManualFalse(competition: Competition) = fixtureRepository.findByCompetitionAndManualFalse(competition)
 
