@@ -12,7 +12,7 @@ class FixtureService(
         @Autowired private var fixtureRepository: FixtureRepository
 ) {
 
-    fun saveMany(fixtures: List<Fixture>): MutableList<Fixture> = fixtureRepository.save(fixtures)
+    fun saveMany(fixtures: List<Fixture>): List<Fixture> = fixtureRepository.save(fixtures)
 
     fun findUnfinishedFixtures() = fixtureRepository.findByFixtureStatusNotIn(FixtureStatus.finalStatuses())
 
