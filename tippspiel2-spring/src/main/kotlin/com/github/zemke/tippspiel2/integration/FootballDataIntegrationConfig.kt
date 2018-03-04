@@ -106,8 +106,8 @@ open class FootballDataIntegrationConfig {
         footballDataTrigger().period = millisUntilNextPoll.toLong()
     }
 
-    private fun createFootballDataMessageHeaders(competition: Competition, requestsTillReset: MutableList<String>?,
-                                                 secondsTillReset: MutableList<String>?): MessageHeaders {
+    private fun createFootballDataMessageHeaders(competition: Competition, requestsTillReset: List<String>?,
+                                                 secondsTillReset: List<String>?): MessageHeaders {
         return MessageHeaders(mapOf(
                 Pair(COMPETITION_HEADER_NAME, competition),
                 Pair(footballDataProperties.requestsTillResetHeader,
@@ -117,7 +117,7 @@ open class FootballDataIntegrationConfig {
         ))
     }
 
-    private fun parseHeaderValue(headerValue: MutableList<String>?, headerNameForLogging: String): Int? {
+    private fun parseHeaderValue(headerValue: List<String>?, headerNameForLogging: String): Int? {
         var resultingRequestsTillReset: Int? = null
 
         if (headerValue == null || headerValue.isEmpty()) {
