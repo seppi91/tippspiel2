@@ -94,7 +94,8 @@ open class FootballDataIntegrationConfig {
                 .filter { fixtures.contains(it) }
 
         if (fixturesToSave.isNotEmpty()) {
-            standingService.updateByFixtures(fixtureService.saveMany(fixturesToSave))
+            fixtureService.saveMany(fixturesToSave)
+            standingService.updateStandings()
         }
 
         val requestsTillResetHeaderValue = messageHeaderAccessor.getHeader(

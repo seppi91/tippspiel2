@@ -101,7 +101,7 @@ open class StandingServiceTest {
                 testEntityManager.persistAndFlush(Standing(id = null, user = user1, bettingGame = bettingGame)),
                 testEntityManager.persistAndFlush(Standing(id = null, user = user2, bettingGame = bettingGame)))
 
-        val standingsActual = standingService.updateByFixtures(fixtures)
+        val standingsActual = standingService.updateStandings()
 
         Assert.assertEquals(
                 listOf(
