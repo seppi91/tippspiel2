@@ -13,11 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.integration.IntegrationMessageHeaderAccessor
-import org.springframework.integration.annotation.InboundChannelAdapter
-import org.springframework.integration.annotation.Poller
-import org.springframework.integration.annotation.ServiceActivator
 import org.springframework.integration.channel.QueueChannel
 import org.springframework.integration.config.EnableIntegration
+import org.springframework.integration.dsl.IntegrationFlow
+import org.springframework.integration.dsl.IntegrationFlows
+import org.springframework.integration.dsl.Pollers
 import org.springframework.integration.endpoint.PollingConsumer
 import org.springframework.integration.util.DynamicPeriodicTrigger
 import org.springframework.messaging.Message
@@ -52,7 +52,14 @@ open class FootballDataIntegrationConfig {
     }
 
     @Bean
-    @InboundChannelAdapter(channel = "footballDataChannel", poller = [(Poller("footballDataPoller"))])
+    open fun integrate(): IntegrationFlow {
+        return IntegrationFlows
+                .from(this@FootballDataIntegrationConfig::footballDataAdapter, { Pollers.trigger(footballDataTrigger()) })
+                .handle({ it: Message<FootballDataFixtureWrappedListDto> -> footballDataServiceActivator(it) })
+                .get()
+    }
+
+    @Bean
     open fun footballDataAdapter(): Message<FootballDataFixtureWrappedListDto> {
         val competition: Competition? = null // TODO Get active competition.
         val fixtureResponseEntities = footballDataService.requestFixturesAsEntity(competition!!.id)
@@ -67,10 +74,11 @@ open class FootballDataIntegrationConfig {
     }
 
     @Bean
-    open fun footballDataPoller(): PollingConsumer = with(PollingConsumer(footballDataChannel(), MessageHandler { it.payload })) {
-        setTrigger(footballDataTrigger())
-        this
-    }
+    open fun footballDataPoller(): PollingConsumer =
+            with(PollingConsumer(footballDataChannel(), MessageHandler { it.payload })) {
+                setTrigger(footballDataTrigger())
+                this
+            }
 
     @Bean
     open fun footballDataTrigger(): DynamicPeriodicTrigger = DynamicPeriodicTrigger(0)
@@ -79,10 +87,10 @@ open class FootballDataIntegrationConfig {
     open fun footballDataChannel(): QueueChannel = QueueChannel()
 
     @Bean
-    @ServiceActivator(inputChannel = "footballDataChannel")
     open fun footballDataServiceActivator(message: Message<FootballDataFixtureWrappedListDto>) {
         val messageHeaderAccessor = IntegrationMessageHeaderAccessor(message)
         val competition = messageHeaderAccessor.getHeader(COMPETITION_HEADER_NAME, Competition::class.java)
+                ?: throw Exception("There is no competition header.")
 
         val fixtures = fixtureService.findFixturesByCompetitionAndManualFalse(competition)
         val teams = fixtures.fold(arrayListOf()) { acc: ArrayList<Team>, fixture: Fixture ->

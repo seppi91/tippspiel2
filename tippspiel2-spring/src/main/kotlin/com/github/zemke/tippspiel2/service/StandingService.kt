@@ -60,7 +60,7 @@ open class StandingService(
             it.missedBets = calcMissedBets(it, numberOfFixturesInCompetition)
         }
 
-        return standingRepository.save(standings)
+        return standingRepository.saveAll(standings)
     }
 
     private fun calcMissedBets(standing: Standing, numberOfFixturesInCompetition: Int): Int {
