@@ -12,11 +12,11 @@ class FixtureService(
         @Autowired private var fixtureRepository: FixtureRepository
 ) {
 
-    fun saveMany(fixtures: List<Fixture>): List<Fixture> = fixtureRepository.save(fixtures)
+    fun saveMany(fixtures: List<Fixture>): List<Fixture> = fixtureRepository.saveAll(fixtures)
 
     fun findUnfinishedFixtures() = fixtureRepository.findByStatusNotIn(FixtureStatus.finalStatuses())
 
     fun findFixturesByCompetitionAndManualFalse(competition: Competition) = fixtureRepository.findByCompetitionAndManualFalse(competition)
 
-    fun getById(fixtureId: Long): Fixture? = fixtureRepository.findOne(fixtureId)
+    fun getById(fixtureId: Long): Fixture? = fixtureRepository.findById(fixtureId).orElse(null)
 }
