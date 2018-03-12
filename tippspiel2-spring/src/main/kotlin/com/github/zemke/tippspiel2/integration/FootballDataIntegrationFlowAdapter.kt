@@ -11,30 +11,26 @@ import com.github.zemke.tippspiel2.view.model.FootballDataFixtureDto
 import com.github.zemke.tippspiel2.view.model.FootballDataFixtureWrappedListDto
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
 import org.springframework.integration.IntegrationMessageHeaderAccessor
-import org.springframework.integration.channel.QueueChannel
-import org.springframework.integration.config.EnableIntegration
-import org.springframework.integration.dsl.IntegrationFlow
+import org.springframework.integration.annotation.InboundChannelAdapter
+import org.springframework.integration.annotation.ServiceActivator
+import org.springframework.integration.dsl.IntegrationFlowAdapter
+import org.springframework.integration.dsl.IntegrationFlowDefinition
 import org.springframework.integration.dsl.IntegrationFlows
 import org.springframework.integration.dsl.Pollers
-import org.springframework.integration.endpoint.PollingConsumer
 import org.springframework.integration.util.DynamicPeriodicTrigger
 import org.springframework.messaging.Message
-import org.springframework.messaging.MessageHandler
 import org.springframework.messaging.MessageHeaders
 import org.springframework.messaging.support.MessageBuilder
+import org.springframework.stereotype.Component
 import java.util.logging.Logger
 
-// TODO Use Spring Integration's Java DSL for better readability of the Integration flow.
-// TODO Find a way to test and introduce sophisticated logging.
-
-@Configuration
-@EnableIntegration
-open class FootballDataIntegrationConfig {
+@Component
+class FootballDataIntegrationFlowAdapter : IntegrationFlowAdapter() {
 
     @Autowired
     private lateinit var footballDataService: FootballDataService
+
 
     @Autowired
     private lateinit var footballDataProperties: FootballDataProperties
@@ -48,19 +44,22 @@ open class FootballDataIntegrationConfig {
     companion object {
 
         private const val COMPETITION_HEADER_NAME = "competition"
-        private val LOGGER = Logger.getLogger(FootballDataIntegrationConfig::class.java.name) // TODO Get to know Spring Boot logging best practices.
+
+        // TODO Get to know Spring Boot logging best practices.
+        // TODO Also implement sophisticated logging for for this Integraion Flow.
+        private val LOGGER = Logger.getLogger(FootballDataIntegrationFlowAdapter::class.java.name)
     }
 
-    @Bean
-    open fun integrate(): IntegrationFlow {
-        return IntegrationFlows
-                .from(this@FootballDataIntegrationConfig::footballDataAdapter, { Pollers.trigger(footballDataTrigger()) })
-                .handle({ it: Message<FootballDataFixtureWrappedListDto> -> footballDataServiceActivator(it) })
-                .get()
-    }
+    override fun buildFlow(): IntegrationFlowDefinition<*> =
+            IntegrationFlows
+                    .from(this@FootballDataIntegrationFlowAdapter::footballDataAdapter, { Pollers.trigger(footballDataTrigger()) })
+                    .handle({ it: Message<FootballDataFixtureWrappedListDto> -> footballDataServiceActivator(it) })
+
 
     @Bean
-    open fun footballDataAdapter(): Message<FootballDataFixtureWrappedListDto> {
+    private fun footballDataAdapter(): Message<FootballDataFixtureWrappedListDto> {
+        LOGGER.info("Inbounding")
+
         val competition: Competition? = null // TODO Get active competition.
         val fixtureResponseEntities = footballDataService.requestFixturesAsEntity(competition!!.id)
 
@@ -74,20 +73,10 @@ open class FootballDataIntegrationConfig {
     }
 
     @Bean
-    open fun footballDataPoller(): PollingConsumer =
-            with(PollingConsumer(footballDataChannel(), MessageHandler { it.payload })) {
-                setTrigger(footballDataTrigger())
-                this
-            }
+    private fun footballDataTrigger(): DynamicPeriodicTrigger = DynamicPeriodicTrigger(0)
 
-    @Bean
-    open fun footballDataTrigger(): DynamicPeriodicTrigger = DynamicPeriodicTrigger(0)
-
-    @Bean
-    open fun footballDataChannel(): QueueChannel = QueueChannel()
-
-    @Bean
-    open fun footballDataServiceActivator(message: Message<FootballDataFixtureWrappedListDto>) {
+    @ServiceActivator
+    private fun footballDataServiceActivator(message: Message<FootballDataFixtureWrappedListDto>) {
         val messageHeaderAccessor = IntegrationMessageHeaderAccessor(message)
         val competition = messageHeaderAccessor.getHeader(COMPETITION_HEADER_NAME, Competition::class.java)
                 ?: throw Exception("There is no competition header.")
