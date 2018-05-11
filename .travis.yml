@@ -3,4 +3,4 @@ jdk: oraclejdk8
 services: postgresql
 
 script:
-  - echo 'SKIP TESTS'
+  - ls target/
